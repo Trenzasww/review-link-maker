@@ -1,11 +1,10 @@
 # Review Link Maker
 
-Escribís el nombre de un local, lo elegís y copiás el link de reseña de Google Maps con un botón.
+Genera el link de reseña de Google Maps (`https://search.google.com/local/writereview?placeid=...`) sin API key y sin costo.
 
 ## Usar
-1. En Google Cloud Console activá **Places API (New)** y creá una API key.
-2. Restringí la key por **HTTP referrers** a tu sitio (`https://TU-USUARIO.github.io/*`) y solo a Places API (New).
-3. Abrí la página, desplegá **Configuración**, pegá la key y guardá. Queda solo en tu navegador.
+1. Escribí el local y tocá **Abrir en Maps**.
+2. Hacé clic en el negocio y pegá la URL de la barra de direcciones en la página. El link se genera y se copia solo.
+3. **Modo 1 clic:** arrastrá el botón "Link de reseña" a tu barra de marcadores. En Google Maps, abrí un negocio y tocá el marcador.
 
-## Publicar en GitHub Pages
-Subí `index.html` a un repo, luego Settings → Pages → Deploy from branch → `main` / root.
+El Place ID se calcula a partir del ID interno que Google incluye en la URL del negocio, todo en tu navegador.
