@@ -2,135 +2,195 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1017">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Review Link">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>Review Link Maker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0b0d14; --card:rgba(255,255,255,.06); --line:rgba(255,255,255,.12);
-    --txt:#eef0f6; --mute:#9aa1b5; --acc:#6c8cff; --acc2:#b36cff; --ok:#3ddc97;
+    --blue:#4285F4; --red:#EA4335; --yellow:#FBBC05; --green:#34A853;
+    --bg:#0d1017; --txt:#f4f6fb; --mute:#a7afc2;
+    --glass:rgba(255,255,255,.09); --glass2:rgba(255,255,255,.05);
+    --edge:rgba(255,255,255,.22);
+    --font:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,sans-serif;
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
   body{
-    margin:0; min-height:100vh; color:var(--txt);
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-    background:
-      radial-gradient(900px 500px at 15% -10%, rgba(108,140,255,.28), transparent 60%),
-      radial-gradient(800px 500px at 100% 0%, rgba(179,108,255,.22), transparent 60%),
-      var(--bg);
+    margin:0; min-height:100vh; min-height:100dvh; color:var(--txt); background:var(--bg);
+    font-family:var(--font); font-weight:700; overflow-x:hidden;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
-  main{max-width:720px; margin:0 auto; padding:48px 16px 80px}
-  h1{font-size:clamp(28px,5vw,40px); margin:0 0 6px; letter-spacing:-.02em}
-  h1 span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .sub{color:var(--mute); margin:0 0 28px}
-  .glass{background:var(--card); border:1px solid var(--line); border-radius:18px; backdrop-filter:blur(14px)}
-  .step{display:flex; gap:14px; padding:18px; margin-bottom:12px; align-items:flex-start}
-  .num{width:34px; height:34px; flex:none; border-radius:50%; display:grid; place-items:center; font-weight:700; background:linear-gradient(90deg,var(--acc),var(--acc2))}
-  .grow{flex:1; min-width:0}
+
+  /* fondo con manchas de colores Google */
+  .blobs{position:fixed; inset:0; z-index:-1; overflow:hidden; background:var(--bg)}
+  .blob{position:absolute; width:min(70vw,460px); height:min(70vw,460px); border-radius:50%; filter:blur(70px); opacity:.55; animation:float 18s ease-in-out infinite}
+  .b1{background:var(--blue); top:-10%; left:-15%}
+  .b2{background:var(--red); top:5%; right:-20%; animation-delay:-5s}
+  .b3{background:var(--yellow); bottom:-12%; left:5%; animation-delay:-9s; opacity:.4}
+  .b4{background:var(--green); bottom:0; right:-15%; animation-delay:-13s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(40px,-30px) scale(1.12)} 66%{transform:translate(-30px,40px) scale(.92)}}
+
+  main{max-width:560px; margin:0 auto; padding:28px 16px 64px}
+  h1{font-size:clamp(30px,9vw,42px); margin:6px 0 4px; letter-spacing:-.03em; line-height:1.05}
+  h1 .g1{color:var(--blue)} h1 .g2{color:var(--red)} h1 .g3{color:var(--yellow)} h1 .g4{color:var(--green)}
+  .sub{color:var(--mute); margin:0 0 22px; font-weight:500; font-size:16px; line-height:1.4}
+
+  .glass{
+    background:linear-gradient(135deg,var(--glass),var(--glass2));
+    border:1px solid var(--edge); border-radius:24px;
+    -webkit-backdrop-filter:blur(26px) saturate(180%); backdrop-filter:blur(26px) saturate(180%);
+    box-shadow:0 10px 40px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .card{padding:18px; margin-bottom:14px; animation:rise .5s ease both}
+  @keyframes rise{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+  .card h3{margin:0 0 12px; font-size:17px; display:flex; align-items:center; gap:10px}
+  .dot{width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-size:13px; color:#fff; flex:none}
+  .d1{background:var(--blue)} .d2{background:var(--red)} .d3{background:var(--green)}
+  .steps{margin:0; padding:0; list-style:none; display:grid; gap:10px; color:var(--mute); font-weight:500; font-size:15px}
+  .steps li{display:flex; gap:10px; align-items:flex-start}
+  .steps b{color:var(--txt)}
+
   input[type=text],input[type=search]{
-    flex:1; min-width:0; padding:13px 14px; font-size:15px; color:var(--txt); font-family:inherit;
-    background:rgba(0,0,0,.35); border:1px solid var(--line); border-radius:12px; outline:none;
+    width:100%; min-height:52px; padding:0 16px; font-size:16px; font-family:inherit; font-weight:500; color:var(--txt);
+    background:rgba(0,0,0,.28); border:1px solid var(--edge); border-radius:16px; outline:none;
+    transition:border-color .2s, box-shadow .2s, background .2s;
   }
-  input:focus{border-color:var(--acc); box-shadow:0 0 0 4px rgba(108,140,255,.18)}
-  input.wide{width:100%; margin-top:10px}
-  .result{margin-top:18px; padding:22px}
-  .result h2{margin:0 0 6px; font-size:22px}
-  label{display:block; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); margin:14px 0 6px}
-  .row{display:flex; gap:8px}
-  .field{
-    flex:1; min-width:0; padding:12px 14px; border-radius:12px; font:14px ui-monospace,Consolas,monospace;
-    background:rgba(0,0,0,.35); border:1px solid var(--line); color:var(--txt); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-  }
+  input::placeholder{color:#7f879b}
+  input:focus{border-color:var(--blue); box-shadow:0 0 0 4px rgba(66,133,244,.25); background:rgba(0,0,0,.4)}
+  .row{display:flex; gap:10px}
+  .row input{flex:1; min-width:0}
+
+  /* botones */
   button,.btn{
-    border:0; cursor:pointer; font:600 14px inherit; font-family:inherit; color:#fff; text-decoration:none;
-    padding:12px 18px; border-radius:12px; background:linear-gradient(90deg,var(--acc),var(--acc2));
-    transition:transform .1s, filter .15s; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden; isolation:isolate;
+    min-height:52px; padding:0 20px; border:0; border-radius:16px; cursor:pointer;
+    font-family:inherit; font-weight:700; font-size:16px; letter-spacing:-.01em; color:#fff; text-decoration:none;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap;
+    background:linear-gradient(120deg,var(--blue),#6aa0ff 40%,var(--blue) 80%); background-size:250% 100%;
+    box-shadow:0 8px 22px rgba(66,133,244,.4), inset 0 1px 0 rgba(255,255,255,.4);
+    transition:transform .18s cubic-bezier(.3,1.4,.5,1), box-shadow .2s, background-position .6s, filter .2s;
   }
-  button:hover,.btn:hover{filter:brightness(1.1)}
-  button:active{transform:scale(.97)}
-  button.ghost,.btn.ghost{background:var(--card); border:1px solid var(--line)}
-  button.big{width:100%; padding:16px; font-size:16px; margin-top:18px}
-  button.ok{background:var(--ok); color:#06241a}
-  .actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
-  .qr{margin-top:16px; display:flex; gap:16px; align-items:center}
-  .qr img{width:120px; height:120px; border-radius:12px; background:#fff; padding:6px}
-  .hist{margin-top:34px}
-  .hist h3{font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); margin:0 0 10px; display:flex; justify-content:space-between; align-items:center}
-  .hist h3 button{padding:6px 10px; font-size:12px}
-  .h{display:flex; gap:10px; align-items:center; padding:12px 14px; margin-bottom:8px}
-  .h div{flex:1; min-width:0}
-  .h b{display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .h small{color:var(--mute); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .h button{padding:8px 12px}
-  details{margin-top:34px; color:var(--mute)}
-  details summary{cursor:pointer}
-  .cfg{padding:16px; margin-top:10px}
-  .cfg input{width:100%}
-  .msg{color:#ff8a8a; margin-top:10px; font-size:14px}
+  button::after,.btn::after{ /* brillo que cruza */
+    content:""; position:absolute; top:0; left:-60%; width:40%; height:100%; z-index:-1;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent); transform:skewX(-20deg); transition:left .6s;
+  }
+  @media (hover:hover){
+    button:hover,.btn:hover{transform:translateY(-3px); background-position:100% 0; box-shadow:0 14px 30px rgba(66,133,244,.5), inset 0 1px 0 rgba(255,255,255,.5)}
+    button:hover::after,.btn:hover::after{left:130%}
+  }
+  button:active,.btn:active{transform:scale(.95); transition-duration:.08s}
+  button:disabled{opacity:.6; pointer-events:none}
+  button.red{background:linear-gradient(120deg,var(--red),#ff7a6e 40%,var(--red) 80%); background-size:250% 100%; box-shadow:0 8px 22px rgba(234,67,53,.4), inset 0 1px 0 rgba(255,255,255,.4)}
+  button.green,.btn.green{background:linear-gradient(120deg,var(--green),#5fd07a 40%,var(--green) 80%); background-size:250% 100%; box-shadow:0 8px 22px rgba(52,168,83,.4), inset 0 1px 0 rgba(255,255,255,.4)}
+  button.glassy,.btn.glassy{background:var(--glass); border:1px solid var(--edge); box-shadow:inset 0 1px 0 rgba(255,255,255,.3); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px)}
+  button.big{width:100%; min-height:60px; font-size:18px; border-radius:18px}
+  button.done{animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
+  button.done,button.done:hover{background:var(--green); box-shadow:0 8px 24px rgba(52,168,83,.55)}
+  @keyframes pop{0%{transform:scale(.9)} 60%{transform:scale(1.07)} 100%{transform:scale(1)}}
+  .ripple{position:absolute; border-radius:50%; background:rgba(255,255,255,.55); transform:scale(0); animation:rip .6s ease-out forwards; pointer-events:none; z-index:-1}
+  @keyframes rip{to{transform:scale(1); opacity:0}}
+  .pulse{animation:pulse 2.2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 8px 22px rgba(66,133,244,.4), 0 0 0 0 rgba(66,133,244,.55)} 50%{box-shadow:0 8px 22px rgba(66,133,244,.4), 0 0 0 12px rgba(66,133,244,0)}}
+
+  .stack{display:grid; gap:10px}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .msg{margin-top:12px; padding:12px 14px; border-radius:14px; font-size:14px; font-weight:500; line-height:1.4; background:rgba(234,67,53,.18); border:1px solid rgba(234,67,53,.45)}
+  .msg.info{background:rgba(66,133,244,.18); border-color:rgba(66,133,244,.45)}
+
+  .result h2{margin:0 0 2px; font-size:22px; letter-spacing:-.02em; overflow-wrap:anywhere}
+  .small{color:var(--mute); font-weight:500; font-size:13px}
+  .field{margin:12px 0 0; padding:13px 14px; border-radius:14px; font:500 13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:rgba(0,0,0,.3); border:1px solid var(--edge); word-break:break-all; user-select:all}
+  .qr{display:flex; gap:14px; align-items:center; margin-top:14px}
+  .qr img{width:104px; height:104px; border-radius:14px; background:#fff; padding:6px}
+
+  .h{display:flex; gap:10px; align-items:center; padding:12px; margin-bottom:10px; border-radius:18px}
+  .h .t{flex:1; min-width:0}
+  .h b{display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:15px}
+  .h small{display:block; color:var(--mute); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .h button{min-height:44px; padding:0 14px; font-size:14px; border-radius:13px}
+  .histhead{display:flex; justify-content:space-between; align-items:center; margin:26px 4px 10px; color:var(--mute); font-size:13px; text-transform:uppercase; letter-spacing:.08em}
+  .histhead button{min-height:36px; padding:0 12px; font-size:12px; border-radius:11px}
+  details{margin-top:22px; color:var(--mute)}
+  summary{cursor:pointer; padding:6px 4px; font-size:15px}
+  details .card{margin-top:8px}
+  label{display:block; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); margin:12px 0 6px}
   [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
 </style>
 </head>
 <body>
+<div class="blobs" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><i class="blob b4"></i></div>
 <main>
-  <h1>Review Link <span>Maker</span></h1>
-  <p class="sub">100% gratis, sin API key. Buscá el local en Google Maps y obtené el link de reseña al instante.</p>
+  <h1><span class="g1">Review</span> <span class="g2">Link</span> <span class="g3">Ma</span><span class="g4">ker</span></h1>
+  <p class="sub">Link de reseña de Google Maps en 3 toques. Gratis.</p>
 
-  <section class="glass step">
-    <div class="num">1</div>
-    <div class="grow">
-      <b>Buscá el local</b>
-      <div class="row" style="margin-top:10px">
-        <input id="q" type="search" placeholder="Ej: Panadería La Esquina, Rosario" autocomplete="off" autofocus>
-        <button id="go">Abrir en Maps</button>
+  <section class="glass card">
+    <h3><span class="dot d1">1</span>Buscá el local</h3>
+    <div class="row">
+      <input id="q" type="search" placeholder="Nombre del local y ciudad" autocomplete="off" enterkeyhint="search">
+      <button id="go" aria-label="Buscar en Google Maps">Maps</button>
+    </div>
+    <ul class="steps" style="margin-top:14px">
+      <li>📍 <span>En Google Maps abrí el negocio y tocá <b>Compartir → Copiar enlace</b>.</span></li>
+    </ul>
+  </section>
+
+  <section class="glass card" style="animation-delay:.08s">
+    <h3><span class="dot d2">2</span>Pegá el enlace</h3>
+    <div class="stack">
+      <button class="big pulse" id="paste">📋 Pegar y generar</button>
+      <input id="url" type="text" placeholder="o pegalo manualmente acá" autocomplete="off" inputmode="url">
+    </div>
+    <div id="msg" class="msg" hidden></div>
+  </section>
+
+  <section id="result" class="glass card result" style="animation-delay:.05s" hidden>
+    <h3><span class="dot d3">3</span>Listo</h3>
+    <h2 id="rName"></h2>
+    <div class="small" id="rAddr"></div>
+    <div class="field" id="rLink"></div>
+    <button class="big green" id="copyLink" style="margin-top:14px">Copiar link</button>
+    <div class="grid2" style="margin-top:10px">
+      <a class="btn glassy" id="wa" target="_blank" rel="noopener">WhatsApp</a>
+      <button class="glassy" id="share">Compartir</button>
+      <button class="glassy" id="copyMsg">Copiar mensaje</button>
+      <button class="glassy" id="copyId">Copiar ID</button>
+    </div>
+    <div class="qr">
+      <img id="qrImg" alt="QR del link">
+      <div class="stack" style="flex:1">
+        <a class="btn glassy" id="openLink" target="_blank" rel="noopener">Probar link</a>
+        <a class="btn glassy" id="qrDl" target="_blank" rel="noopener">QR grande</a>
       </div>
     </div>
   </section>
 
-  <section class="glass step">
-    <div class="num">2</div>
-    <div class="grow">
-      <b>Hacé clic en el negocio, copiá la URL y pegala acá</b>
-      <input id="url" class="wide" type="text" placeholder="https://www.google.com/maps/place/..." autocomplete="off">
-      <div id="msg" class="msg" hidden></div>
-    </div>
-  </section>
+  <div class="histhead" id="histHead" hidden><span>Recientes</span><button class="glassy" id="clearHist">Borrar</button></div>
+  <div id="hist"></div>
 
-  <section id="result" class="result glass" hidden>
-    <h2 id="rName"></h2>
-    <label>Link de reseña</label>
-    <div class="row"><div class="field" id="rLink"></div></div>
-    <button class="big" id="copyLink">Copiar link</button>
-    <div class="actions">
-      <button class="ghost" id="copyId">Copiar Place ID</button>
-      <a class="btn ghost" id="openLink" target="_blank" rel="noopener">Probar link</a>
-      <button class="ghost" id="copyMsg">Copiar mensaje listo</button>
-    </div>
-    <label>Place ID</label>
-    <div class="row"><div class="field" id="rId"></div></div>
-    <div class="qr">
-      <img id="qrImg" alt="QR">
-      <a class="btn ghost" id="qrDl" target="_blank" rel="noopener">Abrir QR grande</a>
-    </div>
-  </section>
-
-  <section class="glass step" style="margin-top:28px">
-    <div class="num">⚡</div>
-    <div class="grow">
-      <b>Modo 1 clic (opcional)</b>
-      <p style="color:var(--mute);margin:6px 0 12px;font-size:14px">Arrastrá este botón a tu barra de marcadores. Después, en Google Maps, abrí un negocio y tocá el marcador: el link de reseña queda copiado sin pegar nada.</p>
-      <a class="btn" id="bm" href="#">📍 Link de reseña</a>
-    </div>
-  </section>
-
-  <section class="hist" id="histBox" hidden>
-    <h3>Recientes <button class="ghost" id="clearHist">Borrar</button></h3>
-    <div id="hist"></div>
+  <section class="glass card" id="installBox" style="margin-top:22px" hidden>
+    <h3>📲 Instalar como app</h3>
+    <p class="small" style="margin:0 0 12px">En Android, instalada aparece en el menú Compartir de Google Maps: compartís el local y el link sale solo.</p>
+    <button class="green" id="install" style="width:100%">Instalar</button>
   </section>
 
   <details>
-    <summary>Mensaje para enviar al cliente</summary>
-    <div class="cfg glass">
-      <label style="margin-top:0">Usá {link} donde va el link</label>
+    <summary>Ajustes</summary>
+    <div class="glass card">
+      <label style="margin-top:0">Mensaje para el cliente (usá {link})</label>
       <input id="tpl" type="text">
+      <label>Resolver de links cortos (URL de tu Worker)</label>
+      <input id="resolver" type="text" placeholder="https://tu-worker.workers.dev" inputmode="url">
+      <p class="small">Los links de la app de Maps son cortos (maps.app.goo.gl) y hay que abrirlos para leer el ID. Guía en el README (2 minutos, gratis).</p>
     </div>
   </details>
 </main>
@@ -141,14 +201,17 @@ const LS = {
   get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 };
+// Si ya desplegaste el Worker, poné su URL acá para que quede fija para todos tus dispositivos:
+const DEFAULT_RESOLVER = '';
 const DEFAULT_TPL = '¡Gracias por elegirnos! Si te gustó la atención, nos ayudás mucho dejando tu reseña acá: {link}';
-let tpl = LS.get('tpl', DEFAULT_TPL), hist = LS.get('hist', []), current = null;
-$('tpl').value = tpl;
+let tpl = LS.get('tpl', DEFAULT_TPL), hist = LS.get('hist', []), resolver = LS.get('resolver', DEFAULT_RESOLVER) || DEFAULT_RESOLVER, current = null;
+$('tpl').value = tpl; $('resolver').value = resolver;
 $('tpl').oninput = () => { tpl = $('tpl').value || DEFAULT_TPL; LS.set('tpl', tpl); };
+$('resolver').oninput = () => { resolver = $('resolver').value.trim().replace(/\/$/, ''); LS.set('resolver', resolver); };
 
 const linkFor = id => 'https://search.google.com/local/writereview?placeid=' + id;
 
-// Convierte el feature id de Maps (0xAAAA:0xBBBB) en Place ID (ChIJ...)
+// Feature id de Maps (0xAAAA:0xBBBB) -> Place ID (ChIJ...)
 function toPlaceId(a, b){
   const buf = new Uint8Array(20);
   buf[0] = 0x0a; buf[1] = 0x12; buf[2] = 0x09; buf[11] = 0x11;
@@ -157,78 +220,135 @@ function toPlaceId(a, b){
   return btoa(String.fromCharCode(...buf)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-function parse(text){
-  text = text.trim();
-  let m = text.match(/(?:placeid=|place_id:)(ChIJ[\w-]{20,})/) || text.match(/^(ChIJ[\w-]{20,})$/);
-  let name = '', id = null;
-  if (m) id = m[1];
-  else {
-    m = text.match(/(0x[0-9a-f]{1,16}):(0x[0-9a-f]{1,16})/i);
-    if (m) id = toPlaceId(m[1], m[2]);
+function nameFromUrl(u){
+  const n = u.match(/\/maps\/place\/([^/@?]+)/);
+  if (!n) return '';
+  try { return decodeURIComponent(n[1].replace(/\+/g, ' ')); } catch { return n[1]; }
+}
+function parseDirect(text){
+  let m = text.match(/(?:placeid=|place_id:|query_place_id=)(ChIJ[\w-]{20,})/) || text.match(/\b(ChIJ[\w-]{20,})\b/);
+  if (m) return m[1];
+  m = text.match(/(0x[0-9a-f]{1,16}):(0x[0-9a-f]{1,16})/i);
+  return m ? toPlaceId(m[1], m[2]) : null;
+}
+const isShort = u => /^https?:\/\/(maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)\b/i.test(u);
+
+async function resolveShort(u){
+  const tries = [];
+  if (resolver) tries.push(async () => (await (await fetch(resolver + '/?u=' + encodeURIComponent(u))).json()).url);
+  // intentos de respaldo con servicios públicos (pueden fallar)
+  tries.push(async () => (await (await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(u))).json()).status.url);
+  for (const t of tries) {
+    try { const r = await t(); if (r && parseDirect(r)) return r; } catch {}
   }
-  const n = text.match(/\/maps\/place\/([^/@?]+)/);
-  if (n) { try { name = decodeURIComponent(n[1].replace(/\+/g, ' ')); } catch { name = n[1]; } }
-  return id ? { id, name: name || 'Negocio' } : null;
+  return null;
 }
 
-function showMsg(t){ $('msg').textContent = t; $('msg').hidden = !t; }
-function flash(btn, text){
-  const old = btn.textContent; btn.textContent = text; btn.classList.add('ok');
-  setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1200);
+function showMsg(t, info){ $('msg').textContent = t; $('msg').classList.toggle('info', !!info); $('msg').hidden = !t; }
+function ripple(e){
+  const b = e.target.closest('button,.btn'); if (!b) return;
+  const r = b.getBoundingClientRect(), s = Math.max(r.width, r.height) * 2;
+  const el = document.createElement('span'); el.className = 'ripple';
+  el.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - r.left - s/2}px;top:${e.clientY - r.top - s/2}px`;
+  b.append(el); setTimeout(() => el.remove(), 650);
 }
-async function copy(text, btn, label = '¡Copiado!'){
-  try { await navigator.clipboard.writeText(text); }
-  catch { const t = document.createElement('textarea'); t.value = text; document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); }
-  if (btn) flash(btn, label);
+document.addEventListener('pointerdown', ripple);
+
+function flash(btn, text){
+  if (!btn) return;
+  if (!btn.dataset.t) btn.dataset.t = btn.textContent;
+  btn.textContent = text; btn.classList.remove('done'); void btn.offsetWidth; btn.classList.add('done');
+  clearTimeout(btn._t);
+  btn._t = setTimeout(() => { btn.textContent = btn.dataset.t; btn.classList.remove('done'); }, 1400);
+  if (navigator.vibrate) navigator.vibrate(18);
+}
+async function copy(text, btn, label = '✓ ¡Copiado!'){
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; }
+  catch {
+    const t = document.createElement('textarea'); t.value = text; t.style.cssText = 'position:fixed;opacity:0';
+    document.body.append(t); t.select(); try { ok = document.execCommand('copy'); } catch {} t.remove();
+  }
+  if (ok) flash(btn, label);
+  return ok;
 }
 
 function go(){
   const q = $('q').value.trim();
   if (!q) return $('q').focus();
   window.open('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(q), '_blank', 'noopener');
-  $('url').focus();
 }
 $('go').onclick = go;
 $('q').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
 
-function handle(){
-  const v = $('url').value;
-  if (!v.trim()) { showMsg(''); return; }
-  const r = parse(v);
-  if (!r) { showMsg('No encontré el negocio en esa URL. Hacé clic en el negocio (no en la lista) y copiá la URL de la barra de direcciones. Los links cortos (maps.app.goo.gl) no sirven.'); return; }
+async function process(text){
+  text = (text || '').trim();
+  if (!text) { showMsg(''); return; }
+  const um = text.match(/https?:\/\/[^\s]+/);
+  let url = um ? um[0] : text;
+  const firstLine = text.split(/\n/)[0].trim();
+  let name = firstLine && !/^https?:/.test(firstLine) ? firstLine : '';
+  let id = parseDirect(url) || parseDirect(text), full = url;
+
+  if (!id && isShort(url)) {
+    showMsg('Leyendo el link…', true);
+    $('paste').disabled = true;
+    full = await resolveShort(url);
+    $('paste').disabled = false;
+    if (full) id = parseDirect(full);
+    if (!id) {
+      showMsg(resolver
+        ? 'No pude leer ese link corto. Probá de nuevo o pegá la URL larga del negocio.'
+        : 'Los links cortos de la app de Maps necesitan el "resolver" (se configura una sola vez en Ajustes, guía en el README). Mientras tanto pegá la URL larga: abrí el negocio en Maps desde el navegador y copiá la dirección.');
+      return;
+    }
+  }
+  if (!id) { showMsg('No encontré un negocio en ese texto. Usá Compartir → Copiar enlace desde la ficha del negocio.'); return; }
   showMsg('');
+  if (!name || name.length > 80) name = nameFromUrl(full || '') || 'Negocio';
+  const r = { id, name };
   show(r);
-  hist = [r, ...hist.filter(h => h.id !== r.id)].slice(0, 20);
+  hist = [r, ...hist.filter(h => h.id !== id)].slice(0, 20);
   LS.set('hist', hist); renderHist();
-  copy(linkFor(r.id), $('copyLink'), '¡Link copiado!');
+  copy(linkFor(id), $('copyLink'), '✓ Link copiado');
 }
-$('url').addEventListener('input', handle);
+
+$('paste').onclick = async () => {
+  try { process(await navigator.clipboard.readText()); }
+  catch { showMsg('No pude leer el portapapeles. Mantené apretado el campo de abajo y elegí Pegar.', true); $('url').focus(); }
+};
+$('url').addEventListener('input', () => process($('url').value));
 
 function show(r){
   current = r;
   const link = linkFor(r.id);
   $('rName').textContent = r.name;
+  $('rAddr').textContent = 'Place ID: ' + r.id;
   $('rLink').textContent = link;
-  $('rId').textContent = r.id;
   $('openLink').href = link;
+  $('wa').href = 'https://wa.me/?text=' + encodeURIComponent(tpl.replace('{link}', link));
   $('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=' + encodeURIComponent(link);
   $('qrDl').href = 'https://api.qrserver.com/v1/create-qr-code/?size=800x800&format=png&data=' + encodeURIComponent(link);
+  $('share').hidden = !navigator.share;
   $('result').hidden = false;
+  $('result').style.animation = 'none'; void $('result').offsetWidth; $('result').style.animation = '';
+  $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 $('copyLink').onclick = e => copy(linkFor(current.id), e.currentTarget);
 $('copyId').onclick = e => copy(current.id, e.currentTarget);
 $('copyMsg').onclick = e => copy(tpl.replace('{link}', linkFor(current.id)), e.currentTarget);
+$('share').onclick = () => navigator.share({ text: tpl.replace('{link}', linkFor(current.id)) }).catch(() => {});
 
 function renderHist(){
-  $('histBox').hidden = !hist.length;
+  $('histHead').hidden = !hist.length;
   const box = $('hist'); box.innerHTML = '';
   hist.forEach(h => {
     const d = document.createElement('div'); d.className = 'h glass';
-    d.innerHTML = '<div><b></b><small></small></div><button class="ghost">Ver</button><button>Copiar</button>';
+    d.innerHTML = '<div class="t"><b></b><small></small></div><button class="glassy">Ver</button><button>Copiar</button>';
     d.querySelector('b').textContent = h.name;
     d.querySelector('small').textContent = h.id;
     const [ver, cp] = d.querySelectorAll('button');
-    ver.onclick = () => { show(h); scrollTo({ top: 0, behavior: 'smooth' }); };
+    ver.onclick = () => show(h);
     cp.onclick = e => copy(linkFor(h.id), e.currentTarget);
     box.append(d);
   });
@@ -236,19 +356,15 @@ function renderHist(){
 $('clearHist').onclick = () => { hist = []; LS.set('hist', hist); renderHist(); };
 renderHist();
 
-// Marcador: corre dentro de Google Maps
-const bmCode = function(){
-  var m = location.href.match(/(0x[0-9a-f]+):(0x[0-9a-f]+)/i);
-  if (!m) { alert('Primero abrí un negocio en Google Maps'); return; }
-  var b = new Uint8Array(20); b[0] = 10; b[1] = 18; b[2] = 9; b[11] = 17;
-  function w(o, v){ for (var i = 0; i < 8; i++) { b[o + i] = Number(v & 255n); v >>= 8n; } }
-  w(3, BigInt(m[1])); w(12, BigInt(m[2]));
-  var s = btoa(String.fromCharCode.apply(null, b)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  var l = 'https://search.google.com/local/writereview?placeid=' + s;
-  navigator.clipboard.writeText(l).then(function(){ alert('Link copiado:\n' + l); }, function(){ prompt('Copiá el link:', l); });
-};
-$('bm').href = 'javascript:(' + bmCode.toString().replace(/\s*\n\s*/g, ' ') + ')()';
-$('bm').onclick = e => { e.preventDefault(); alert('Arrastrá este botón a tu barra de marcadores y usalo desde Google Maps.'); };
+// Instalación como app + recibir links desde "Compartir" de Maps (Android)
+let deferred;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferred = e; $('installBox').hidden = false; });
+$('install').onclick = async () => { if (deferred) { deferred.prompt(); await deferred.userChoice; deferred = null; $('installBox').hidden = true; } };
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+const sp = new URLSearchParams(location.search);
+const shared = [sp.get('title'), sp.get('text'), sp.get('url')].filter(Boolean).join('\n');
+if (shared) { history.replaceState(null, '', location.pathname); $('url').value = shared.split('\n').find(l => /^https?:/.test(l)) || shared; process(shared); }
 </script>
 </body>
 </html>
