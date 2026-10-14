@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review Link Maker</title>
+<style>
+  :root{
+    --bg:#0b0d14; --card:rgba(255,255,255,.06); --line:rgba(255,255,255,.12);
+    --txt:#eef0f6; --mute:#9aa1b5; --acc:#6c8cff; --acc2:#b36cff; --ok:#3ddc97;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; color:var(--txt);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    background:
+      radial-gradient(900px 500px at 15% -10%, rgba(108,140,255,.28), transparent 60%),
+      radial-gradient(800px 500px at 100% 0%, rgba(179,108,255,.22), transparent 60%),
+      var(--bg);
+  }
+  main{max-width:720px; margin:0 auto; padding:48px 16px 80px}
+  h1{font-size:clamp(28px,5vw,40px); margin:0 0 6px; letter-spacing:-.02em}
+  h1 span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--mute); margin:0 0 28px}
+  .glass{background:var(--card); border:1px solid var(--line); border-radius:18px; backdrop-filter:blur(14px)}
+  .search{position:relative}
+  .search input{
+    width:100%; padding:18px 20px 18px 52px; font-size:18px; color:var(--txt);
+    background:var(--card); border:1px solid var(--line); border-radius:16px; outline:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .search input:focus{border-color:var(--acc); box-shadow:0 0 0 4px rgba(108,140,255,.18)}
+  .search svg{position:absolute; left:18px; top:50%; transform:translateY(-50%); opacity:.6}
+  .list{margin-top:10px; overflow:hidden}
+  .item{padding:14px 18px; cursor:pointer; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:2px}
+  .item:last-child{border-bottom:0}
+  .item:hover,.item.active{background:rgba(108,140,255,.14)}
+  .item b{font-weight:600}
+  .item small{color:var(--mute)}
+  .result{margin-top:18px; padding:22px}
+  .result h2{margin:0; font-size:22px}
+  .addr{color:var(--mute); margin:2px 0 18px}
+  label{display:block; font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); margin:14px 0 6px}
+  .row{display:flex; gap:8px}
+  .field{
+    flex:1; min-width:0; padding:12px 14px; border-radius:12px; font:14px ui-monospace,Consolas,monospace;
+    background:rgba(0,0,0,.35); border:1px solid var(--line); color:var(--txt); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  button,.btn{
+    border:0; cursor:pointer; font:600 14px inherit; font-family:inherit; color:#fff; text-decoration:none;
+    padding:12px 18px; border-radius:12px; background:linear-gradient(90deg,var(--acc),var(--acc2));
+    transition:transform .1s, filter .15s; white-space:nowrap; display:inline-flex; align-items:center; justify-content:center;
+  }
+  button:hover,.btn:hover{filter:brightness(1.1)}
+  button:active{transform:scale(.97)}
+  button.ghost,.btn.ghost{background:var(--card); border:1px solid var(--line)}
+  button.big{width:100%; padding:16px; font-size:16px; margin-top:18px}
+  button.ok{background:var(--ok); color:#06241a}
+  .actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+  .qr{margin-top:16px; display:flex; gap:16px; align-items:center}
+  .qr img{width:120px; height:120px; border-radius:12px; background:#fff; padding:6px}
+  .hist{margin-top:34px}
+  .hist h3{font-size:14px; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); margin:0 0 10px; display:flex; justify-content:space-between; align-items:center}
+  .hist h3 button{padding:6px 10px; font-size:12px}
+  .h{display:flex; gap:10px; align-items:center; padding:12px 14px; margin-bottom:8px}
+  .h div{flex:1; min-width:0}
+  .h b{display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .h small{color:var(--mute); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .h button{padding:8px 12px}
+  details{margin-top:34px; color:var(--mute)}
+  details summary{cursor:pointer}
+  .cfg{padding:16px; margin-top:10px}
+  .cfg input[type=password],.cfg input[type=text]{width:100%; padding:12px; border-radius:10px; border:1px solid var(--line); background:rgba(0,0,0,.35); color:var(--txt); font-size:14px}
+  .msg{color:#ff8a8a; margin-top:10px; font-size:14px}
+  .chk{display:flex; align-items:center; gap:8px; margin-top:14px; color:var(--mute); font-size:14px}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>Review Link <span>Maker</span></h1>
+  <p class="sub">Escribí el local, elegilo y copiá el link de reseña de Google Maps.</p>
+
+  <div class="search">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="Ej: Panadería La Esquina, Rosario" autocomplete="off" autofocus>
+  </div>
+  <div id="list" class="list glass" hidden></div>
+  <div id="msg" class="msg" hidden></div>
+
+  <section id="result" class="result glass" hidden>
+    <h2 id="rName"></h2>
+    <div class="addr" id="rAddr"></div>
+
+    <label>Link de reseña</label>
+    <div class="row"><div class="field" id="rLink"></div></div>
+    <button class="big" id="copyLink">Copiar link</button>
+
+    <div class="actions">
+      <button class="ghost" id="copyId">Copiar Place ID</button>
+      <a class="btn ghost" id="openLink" target="_blank" rel="noopener">Probar link</a>
+      <button class="ghost" id="copyMsg">Copiar mensaje listo</button>
+    </div>
+    <label>Place ID</label>
+    <div class="row"><div class="field" id="rId"></div></div>
+
+    <div class="qr">
+      <img id="qrImg" alt="QR">
+      <div>
+        <div style="color:var(--mute);font-size:14px;margin-bottom:8px">Código QR del link</div>
+        <a class="btn ghost" id="qrDl" download="qr-review.png" target="_blank" rel="noopener">Abrir QR</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="hist" id="histBox" hidden>
+    <h3>Recientes <button class="ghost" id="clearHist">Borrar</button></h3>
+    <div id="hist"></div>
+  </section>
+
+  <details id="cfgBox">
+    <summary>Configuración (API key de Google)</summary>
+    <div class="cfg glass">
+      <label style="margin-top:0">API key de Places API (New)</label>
+      <input id="key" type="password" placeholder="AIza..." autocomplete="off">
+      <label>País (opcional, código de 2 letras, ej: ar)</label>
+      <input id="country" type="text" placeholder="ar" maxlength="2">
+      <label>Mensaje para pedir reseña ({link} se reemplaza)</label>
+      <input id="tpl" type="text">
+      <div class="chk"><input type="checkbox" id="auto"><label for="auto" style="margin:0;text-transform:none;letter-spacing:0;font-size:14px">Copiar el link automáticamente al elegir un local</label></div>
+      <div class="actions"><button id="saveCfg">Guardar</button></div>
+      <p style="font-size:13px">Se guarda solo en este navegador. No se sube a ningún lado.</p>
+    </div>
+  </details>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+const DEFAULT_TPL = '¡Gracias por elegirnos! Si te gustó la atención, nos ayudás mucho dejando tu reseña acá: {link}';
+let cfg = { key: LS.get('key',''), country: LS.get('country','ar'), tpl: LS.get('tpl', DEFAULT_TPL), auto: LS.get('auto', false) };
+let hist = LS.get('hist', []);
+let suggestions = [], active = -1, current = null, timer, token = crypto.randomUUID();
+
+$('key').value = cfg.key; $('country').value = cfg.country; $('tpl').value = cfg.tpl; $('auto').checked = cfg.auto;
+if (!cfg.key) $('cfgBox').open = true;
+
+$('saveCfg').onclick = () => {
+  cfg = { key: $('key').value.trim(), country: $('country').value.trim().toLowerCase(), tpl: $('tpl').value || DEFAULT_TPL, auto: $('auto').checked };
+  Object.entries(cfg).forEach(([k,v]) => LS.set(k, v));
+  $('cfgBox').open = false; showMsg('');
+  flash($('saveCfg'), 'Guardado');
+};
+
+const linkFor = id => 'https://search.google.com/local/writereview?placeid=' + id;
+
+function showMsg(t){ $('msg').textContent = t; $('msg').hidden = !t; }
+function flash(btn, text){
+  const old = btn.textContent; btn.textContent = text; btn.classList.add('ok');
+  setTimeout(() => { btn.textContent = old; btn.classList.remove('ok'); }, 1200);
+}
+async function copy(text, btn, label='¡Copiado!'){
+  try { await navigator.clipboard.writeText(text); }
+  catch { const t = document.createElement('textarea'); t.value = text; document.body.append(t); t.select(); document.execCommand('copy'); t.remove(); }
+  if (btn) flash(btn, label);
+}
+
+$('q').addEventListener('input', () => {
+  clearTimeout(timer);
+  const v = $('q').value.trim();
+  if (v.length < 3) { suggestions = []; renderList(); return; }
+  timer = setTimeout(() => search(v), 250);
+});
+
+async function search(input){
+  if (!cfg.key) { showMsg('Falta la API key. Cargala en Configuración.'); $('cfgBox').open = true; return; }
+  try {
+    const body = { input, sessionToken: token };
+    if (cfg.country) body.includedRegionCodes = [cfg.country];
+    const r = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': cfg.key },
+      body: JSON.stringify(body)
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error?.message || 'Error ' + r.status);
+    showMsg('');
+    suggestions = (d.suggestions || []).filter(s => s.placePrediction).map(s => {
+      const p = s.placePrediction;
+      return { id: p.placeId, name: p.structuredFormat?.mainText?.text || p.text.text, addr: p.structuredFormat?.secondaryText?.text || '' };
+    });
+    active = suggestions.length ? 0 : -1;
+    renderList();
+  } catch (e) { showMsg('Error: ' + e.message); }
+}
+
+function renderList(){
+  const el = $('list');
+  el.hidden = !suggestions.length;
+  el.innerHTML = '';
+  suggestions.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'item' + (i === active ? ' active' : '');
+    d.innerHTML = '<b></b><small></small>';
+    d.firstChild.textContent = s.name; d.lastChild.textContent = s.addr;
+    d.onclick = () => pick(s);
+    el.append(d);
+  });
+}
+
+$('q').addEventListener('keydown', e => {
+  if (!suggestions.length) return;
+  if (e.key === 'ArrowDown') { active = (active + 1) % suggestions.length; renderList(); e.preventDefault(); }
+  if (e.key === 'ArrowUp') { active = (active - 1 + suggestions.length) % suggestions.length; renderList(); e.preventDefault(); }
+  if (e.key === 'Enter' && active >= 0) pick(suggestions[active]);
+});
+
+function pick(s){
+  current = s;
+  suggestions = []; renderList();
+  token = crypto.randomUUID();
+  show(s);
+  hist = [s, ...hist.filter(h => h.id !== s.id)].slice(0, 15);
+  LS.set('hist', hist); renderHist();
+  if (cfg.auto) copy(linkFor(s.id), $('copyLink'));
+}
+
+function show(s){
+  current = s;
+  const link = linkFor(s.id);
+  $('rName').textContent = s.name;
+  $('rAddr').textContent = s.addr;
+  $('rLink').textContent = link;
+  $('rId').textContent = s.id;
+  $('openLink').href = link;
+  $('qrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=' + encodeURIComponent(link);
+  $('qrDl').href = 'https://api.qrserver.com/v1/create-qr-code/?size=800x800&format=png&data=' + encodeURIComponent(link);
+  $('result').hidden = false;
+}
+
+$('copyLink').onclick = e => copy(linkFor(current.id), e.currentTarget);
+$('copyId').onclick = e => copy(current.id, e.currentTarget);
+$('copyMsg').onclick = e => copy(cfg.tpl.replace('{link}', linkFor(current.id)), e.currentTarget);
+
+function renderHist(){
+  $('histBox').hidden = !hist.length;
+  const box = $('hist'); box.innerHTML = '';
+  hist.forEach(h => {
+    const d = document.createElement('div'); d.className = 'h glass';
+    d.innerHTML = '<div><b></b><small></small></div><button class="ghost">Ver</button><button>Copiar</button>';
+    d.querySelector('b').textContent = h.name;
+    d.querySelector('small').textContent = h.addr;
+    const [ver, cp] = d.querySelectorAll('button');
+    ver.onclick = () => { show(h); scrollTo({ top: 0, behavior: 'smooth' }); };
+    cp.onclick = e => copy(linkFor(h.id), e.currentTarget);
+    box.append(d);
+  });
+}
+$('clearHist').onclick = () => { hist = []; LS.set('hist', hist); renderHist(); };
+renderHist();
+</script>
+</body>
+</html>
